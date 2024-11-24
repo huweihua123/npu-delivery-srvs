@@ -1,7 +1,7 @@
 /*
  * @Author: weihua hu
  * @Date: 2024-11-24 15:21:20
- * @LastEditTime: 2024-11-24 16:21:49
+ * @LastEditTime: 2024-11-25 01:21:46
  * @LastEditors: weihua hu
  * @Description:
  */
@@ -30,4 +30,8 @@ type User struct {
 	Mobile   string `gorm:"index:idx_mobile;unique;type:varchar(11);not null"`
 	Gender   string `gorm:"column:gender;default:male;type:varchar(6) comment 'female表示女, male表示男'"`
 	Role     int    `gorm:"column:role;default:1;type:int comment '1表示普通用户, 2表示管理员'"`
+}
+
+func (User) TableName() string {
+	return "users"
 }
