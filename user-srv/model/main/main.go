@@ -1,7 +1,7 @@
 /*
  * @Author: weihua hu
  * @Date: 2024-11-24 15:21:44
- * @LastEditTime: 2024-11-24 19:08:16
+ * @LastEditTime: 2024-11-26 23:26:15
  * @LastEditors: weihua hu
  * @Description:
  */
@@ -43,6 +43,6 @@ func main() {
 		panic(err)
 	}
 
-	_ = db.AutoMigrate(&model.User{})
+	_ = db.AutoMigrate(&model.User{}, &model.UserAddress{})
 
 }
