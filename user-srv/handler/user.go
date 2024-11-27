@@ -1,7 +1,7 @@
 /*
  * @Author: weihua hu
  * @Date: 2024-11-25 00:09:23
- * @LastEditTime: 2024-11-26 23:34:09
+ * @LastEditTime: 2024-11-27 20:15:12
  * @LastEditors: weihua hu
  * @Description:
  */
@@ -17,6 +17,7 @@ import (
 	"npu-delivery-srvs/user-srv/proto"
 
 	"github.com/anaskhan96/go-password-encoder"
+	"github.com/golang/protobuf/ptypes/empty"
 
 	"google.golang.org/grpc/codes"
 
@@ -99,6 +100,84 @@ func (u *UserServer) CreateUser(ctx context.Context, req *proto.CreateUserInfo) 
 
 	userInfoRsp := ModelToRsp(user)
 	return &userInfoRsp, nil
+
+}
+
+/**
+ * @Author: weihua hu
+ * @description:
+ * @param {context.Context} ctx
+ * @param {*proto.MobileRequest} req
+ * @return {*proto.UserInfoResponse, error}
+ */
+func (s *UserServer) GetUserByMobile(ctx context.Context, req *proto.MobileRequest) (*proto.UserInfoResponse, error) {
+	var user model.User
+
+	result := global.DB.Where(&model.User{Mobile: req.Mobile}).First(&user)
+
+	if result.RowsAffected == 0 {
+		return nil, status.Errorf(codes.NotFound, "用户不存在")
+	}
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	userInfoRsp := ModelToRsp(user)
+	return &userInfoRsp, nil
+}
+
+/**
+ * @Author: weihua hu
+ * @description:
+ * @param {context.Context} ctx
+ * @param {*proto.IdRequest} req
+ * @return {*proto.UserInfoResponse, error}
+ */
+func (s *UserServer) GetUserById(ctx context.Context, req *proto.IdRequest) (*proto.UserInfoResponse, error) {
+	var user model.User
+
+	result := global.DB.First(&user, req.Id)
+
+	if result.RowsAffected == 0 {
+		return nil, status.Errorf(codes.NotFound, "用户不存在")
+	}
+
+	userInfoRsp := ModelToRsp(user)
+	return &userInfoRsp, nil
+}
+
+/**
+ * @Author: weihua hu
+ * @description:
+ * @param {context.Context} ctx
+ * @param {*proto.UpdateUserInfo} req
+ * @return {*empty.Empty, error}
+ */
+func (s *UserServer) UpdateUser(ctx context.Context, req *proto.UpdateUserInfo) (*empty.Empty, error) {
+	//个人中心更新用户
+	var user model.User
+	result := global.DB.First(&user, req.Id)
+	if result.RowsAffected == 0 {
+		return nil, status.Errorf(codes.NotFound, "用户不存在")
+	}
+
+	user.Username = req.Username
+	user.Email = req.Email
+
+	// if req.ExtraInfo == nil {
+	//     fmt.Println()
+	// }
+
+	user.ExtraInfo = model.ExtraInfo{
+		Age: 10,
+	}
+
+	result = global.DB.Save(&user)
+	if result.Error != nil {
+		return nil, status.Errorf(codes.Internal, result.Error.Error())
+	}
+	return &empty.Empty{}, nil
 
 }
 

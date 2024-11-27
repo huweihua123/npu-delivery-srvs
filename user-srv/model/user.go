@@ -1,7 +1,7 @@
 /*
  * @Author: weihua hu
- * @Date: 2024-11-24 15:21:20
- * @LastEditTime: 2024-11-26 23:26:05
+ * @Date: 2024-11-27 12:52:18
+ * @LastEditTime: 2024-11-27 19:07:23
  * @LastEditors: weihua hu
  * @Description:
  */
@@ -9,8 +9,12 @@
 package model
 
 import (
+	"database/sql/driver"
+	"encoding/json"
+	"fmt"
 	"time"
 
+	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
@@ -23,6 +27,42 @@ type BaseModel struct {
 }
 
 type ExtraInfo struct {
+	Age int `json:"age"`
+}
+
+/**
+ * @Author: weihua hu
+ * @description: 实现 Scanner 接口（从数据库读取）
+ * @param {interface{}} value
+ * @return {error}
+ */
+func (ei *ExtraInfo) Scan(value interface{}) error {
+	if value == nil {
+		return nil
+	}
+	// 确保 value 是 []byte 类型（字节切片）
+	switch v := value.(type) {
+	case []byte:
+		// 如果是 []byte 类型，直接将其转换为字符串进行反序列化
+		return json.Unmarshal(v, ei)
+	case string:
+		// 如果是 string 类型，将其转换为 []byte 进行反序列化
+		return json.Unmarshal([]byte(v), ei)
+	default:
+		err := fmt.Errorf("expected string or []byte, got %T", value)
+		zap.S().Errorf("Scan failed: %v", err)
+		return err
+	}
+
+}
+
+/**
+ * @Author: weihua hu
+ * @description: 实现 Valuer 接口（将结构体写入数据库）
+ * @return {driver.Value, error}
+ */
+func (ei ExtraInfo) Value() (driver.Value, error) {
+	return json.Marshal(ei)
 }
 
 type User struct {
@@ -33,7 +73,7 @@ type User struct {
 	Mobile    string    `gorm:"index:idx_mobile;unique;type:varchar(11);not null"`
 	Gender    string    `gorm:"column:gender;default:male;type:varchar(6) comment 'female表示女, male表示男'"`
 	Role      int       `gorm:"column:role;default:1;type:int comment '1表示普通用户, 2表示管理员'"`
-	ExtraInfo ExtraInfo `gorm:"column:extra_info;type:json"` // 新增的 extra_info 字段
+	ExtraInfo ExtraInfo `gorm:"column:extra_info;type:json"`
 }
 
 func (User) TableName() string {

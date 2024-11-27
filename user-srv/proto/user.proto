@@ -4,6 +4,9 @@ option go_package = ".;proto";
 
 service User{
     rpc CreateUser(CreateUserInfo) returns (UserInfoResponse); // 添加用户
+    rpc GetUserByMobile(MobileRequest) returns (UserInfoResponse); // 根据手机号获取用户信息
+    rpc GetUserById(IdRequest) returns (UserInfoResponse); // 根据用户名获取用户信息
+    rpc UpdateUser(UpdateUserInfo) returns (google.protobuf.Empty); // 更新用户信息
     rpc CreateUserAddress(CreateUserAddressInfo) returns (UserAddressResponse); // 添加用户地址
 }
 
@@ -41,4 +44,19 @@ message UserAddressResponse{
     int32 user_id = 2;
     string address = 3;
     bool is_default = 4;
+}
+
+message MobileRequest{
+    string mobile = 1;
+}
+
+message IdRequest{
+    int32 id = 1;
+}
+
+message UpdateUserInfo{
+    int32 id = 1;
+    string username = 2;
+    string email = 3;
+    ExtraInfo extra_info = 4;  
 }
