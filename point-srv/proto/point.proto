@@ -1,0 +1,49 @@
+syntax = "proto3";
+import "google/protobuf/empty.proto";
+option go_package = ".;proto";
+
+service Points {
+    // 增加并冻结积分
+    rpc AddAndFreezePoints(AddAndFreezePointsRequest) returns (AddAndFreezePointsResponse);
+    // 解冻积分
+    rpc UnfreezePoints(UnfreezePointsRequest) returns (UnfreezePointsResponse);
+    // 获取积分明细
+    rpc GetPointsDetails(GetPointsDetailsRequest) returns (GetPointsDetailsResponse);
+}
+
+message AddAndFreezePointsRequest {
+    int32 user_id = 1;
+    int32 points = 2;
+    string order_sn = 3;
+}
+
+message AddAndFreezePointsResponse {
+    bool success = 1;
+    string message = 2;
+}
+
+message UnfreezePointsRequest {
+    int32 user_id = 1;
+    string order_sn = 2;
+}
+
+message UnfreezePointsResponse {
+    bool success = 1;
+    string message = 2;
+}
+
+message GetPointsDetailsRequest {
+    int32 user_id = 1;
+  }
+  
+  message PointsDetail {
+    int32 user_id = 1;
+    string order_sn = 2;
+    int32 change = 3;
+    int32 balance = 4;
+    int64 timestamp = 5;
+  }
+  
+  message GetPointsDetailsResponse {
+    repeated PointsDetail points_details = 1;
+  }
