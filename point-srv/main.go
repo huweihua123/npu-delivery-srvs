@@ -1,7 +1,7 @@
 /*
  * @Author: weihua hu
  * @Date: 2024-11-29 23:00:16
- * @LastEditTime: 2024-11-30 19:32:26
+ * @LastEditTime: 2024-12-02 15:57:31
  * @LastEditors: weihua hu
  * @Description:
  */
@@ -65,8 +65,8 @@ func main() {
 
 	// 创建消费者实例
 	c, err := consumer.NewPushConsumer(
-		consumer.WithGroupName("points-group"),              // 消费者组，确保只有一个实例消费每条消息
-		consumer.WithNameServer([]string{"127.0.0.1:9876"}), // RocketMQ NameServer 地址
+		consumer.WithGroupName("points-group"),                  // 消费者组，确保只有一个实例消费每条消息
+		consumer.WithNameServer([]string{"8.152.195.132:9876"}), // RocketMQ NameServer 地址
 	)
 	if err != nil {
 		zap.S().Fatalf("Error creating consumer: %v", err)
